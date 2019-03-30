@@ -3,7 +3,8 @@
 
 from threading import Lock
 
-from Adafruit_Python_LED_Backpack.Adafruit_LED_Backpack import BicolorMatrix8x8
+# from Adafruit_Python_LED_Backpack.Adafruit_LED_Backpack import BicolorMatrix8x8
+from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 import led8x8life
 
@@ -14,5 +15,4 @@ if __name__ == '__main__':
     LIFE = led8x8life.Led8x8Life(DISPLAY, LOCK)
     LIFE.reset()
     while True:
-    	LIFE.display()
-
+        LIFE.display()

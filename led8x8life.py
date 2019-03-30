@@ -5,7 +5,7 @@ import time
 
 BRIGHTNESS = 5
 
-UPDATE_RATE_SECONDS = 0.2
+UPDATE_RATE_SECONDS = 0.3
 
 PATTERN_RATE = 10
 
@@ -31,7 +31,8 @@ class Led8x8Life:
             0: self.glider,
             1: self.oscilator1,
             2: self.oscilator2,
-            3: self.toad
+            3: self.oscilator3,
+            4: self.toad
         }
         self.bus_lock.release()
 
@@ -61,6 +62,18 @@ class Led8x8Life:
 
     def oscilator2(self,):
         """ initialize to starting state and set brightness """
+        self.next_gen[0] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.next_gen[1] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.next_gen[2] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.next_gen[3] = [0, 1, 1, 1, 1, 1, 1, 0]
+        self.next_gen[4] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.next_gen[5] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.next_gen[6] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.next_gen[7] = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.copy()
+
+    def oscilator3(self,):
+        """ initialize to starting state and set brightness """
         self.next_gen[0] = [0, 0, 0, 0, 0, 1, 1, 1]
         self.next_gen[1] = [0, 0, 0, 0, 0, 0, 0, 0]
         self.next_gen[2] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -89,7 +102,7 @@ class Led8x8Life:
         self.dispatch[self.pattern]()
         self.pattern_switch_time = time.time()
         self.pattern += 1
-        if self.pattern > 3:
+        if self.pattern > 4:
             self.pattern = 0
         self.bus_lock.release()
 
@@ -144,9 +157,20 @@ class Led8x8Life:
 
     def copy(self,):
         """ ensure that the returned coordinate is between 0 and 7 """
+        early_spawn = True
         for i in range(8):
             for j in range(8):
                 self.current_gen[i][j] = self.next_gen[i][j]
+                if early_spawn:
+                    if self.current_gen[i][j] != 0:
+                        early_spawn = False
+        if early_spawn:
+            self.bus_lock.acquire(True)
+            self.matrix.clear()
+            self.matrix.write_display()
+            self.bus_lock.release()
+            self.spawn()
+            time.sleep(1)
 
     def display(self,):
         """ display the series as a 64 bit image with alternating colored pixels """
@@ -157,7 +181,7 @@ class Led8x8Life:
         now_time = time.time()
         elapsed = now_time - self.pattern_switch_time
         if elapsed > PATTERN_RATE:
-        	self.spawn()
+            self.spawn()
 
 if __name__ == '__main__':
     exit()
