@@ -30,9 +30,10 @@ class Led8x8Life:
         self.dispatch = {
             0: self.glider,
             1: self.oscilator1,
-            2: self.oscilator2,
-            3: self.oscilator3,
-            4: self.toad
+            2: self.oscilator1,
+            3: self.oscilator2,
+            4: self.oscilator3,
+            5: self.toad
         }
         self.bus_lock.release()
 
@@ -102,7 +103,7 @@ class Led8x8Life:
         self.dispatch[self.pattern]()
         self.pattern_switch_time = time.time()
         self.pattern += 1
-        if self.pattern > 4:
+        if self.pattern > 5:
             self.pattern = 0
         self.bus_lock.release()
 
